@@ -42,13 +42,15 @@ class SparseBooleanMatrix(object):
             column.insert_h()
             
         def exact_cover(row_stack, callback=None):
-            if self.head.right is self.head:
+            must_cover_columns = filter(lambda x:x.must_cover, self)
+
+            if len(must_cover_columns) == 0:
                 solution = row_stack[:]
                 if callback is not None:
                     callback(solution)
                 yield solution
             else:
-                c = min(self)
+                c = min(must_cover_columns)
                 cover(c)
 
                 for r in c:
@@ -114,6 +116,10 @@ class Node(object):
 
 class Column(Node):
     size = 0
+
+    def __init__(self, must_cover=False):
+        super(Column, self).__init__()
+        self.must_cover = must_cover
         
     def __lt__(self, other):
         return self.size < other.size
